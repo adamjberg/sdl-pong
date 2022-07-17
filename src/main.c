@@ -26,7 +26,7 @@ bool init(void)
     success = false;
   }
 
-  window = SDL_CreateWindow("Pong", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("Pong", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 720, 400, SDL_WINDOW_SHOWN);
   if (!window)
   {
     printf("SDL_Window could not be initialized. SDL_Error: %s\n", SDL_GetError());
@@ -64,8 +64,20 @@ void loop()
 {
   handle_events();
 
-  SDL_SetRenderDrawColor(renderer, 18, 1, 54, SDL_ALPHA_OPAQUE);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  
+  const int ball_size = 14;
+  const int half_ball_size = ball_size / 2;
+
+  SDL_Rect ball;
+  ball.x = (720 / 2) - half_ball_size;
+  ball.y = (400 / 2) - half_ball_size;
+  ball.h = ball_size;
+  ball.w = ball_size;
+  SDL_RenderFillRect(renderer, &ball);
 
   SDL_RenderPresent(renderer);
 
