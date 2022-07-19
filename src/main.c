@@ -12,6 +12,16 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Event e;
 
+const int screen_height = 400;
+const int screen_width = 720;
+
+SDL_Rect ball;
+const int ball_size = 14;
+const int half_ball_size = ball_size / 2;
+int ball_speed = 1;
+int ball_x_direction = 1;
+int ball_y_direction = 1;
+
 bool running = false;
 
 bool init(void)
@@ -26,7 +36,7 @@ bool init(void)
     success = false;
   }
 
-  window = SDL_CreateWindow("Pong", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 720, 400, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("Pong", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
   if (!window)
   {
     printf("SDL_Window could not be initialized. SDL_Error: %s\n", SDL_GetError());
@@ -34,8 +44,13 @@ bool init(void)
   }
   else
   {
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   }
+
+  ball.x = (screen_width / 2) - half_ball_size;
+  ball.y = (screen_height / 2) - half_ball_size;
+  ball.h = ball_size;
+  ball.w = ball_size;
 
   running = true;
   return success;
@@ -68,20 +83,25 @@ void loop()
   SDL_RenderClear(renderer);
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-  
-  const int ball_size = 14;
-  const int half_ball_size = ball_size / 2;
 
-  SDL_Rect ball;
-  ball.x = (720 / 2) - half_ball_size;
-  ball.y = (400 / 2) - half_ball_size;
-  ball.h = ball_size;
-  ball.w = ball_size;
+  ball.x += ball_speed * ball_x_direction;
+  ball.y += ball_speed * ball_y_direction;
+
+  if (ball.x <= 0) {
+    ball_x_direction = 1;
+  } else if (ball.x + ball_size >= screen_width) {
+    ball_x_direction = -1;
+  }
+
+  if (ball.y <= 0) {
+    ball_y_direction = 1;
+  } else if (ball.y + ball_size >= screen_height) {
+    ball_y_direction = -1;
+  }
+
   SDL_RenderFillRect(renderer, &ball);
 
   SDL_RenderPresent(renderer);
-
-  SDL_Delay(70);
 }
 
 void handle_events()
