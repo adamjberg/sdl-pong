@@ -6,6 +6,7 @@
 
 void handle_events(void);
 void loop(void);
+void reset_ball();
 void quit_game(void);
 
 SDL_Window *window;
@@ -53,10 +54,9 @@ bool init(void)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   }
 
-  ball.x = (screen_width / 2) - half_ball_size;
-  ball.y = (screen_height / 2) - half_ball_size;
   ball.h = ball_size;
   ball.w = ball_size;
+  reset_ball();
 
   paddle_1.w = 14;
   paddle_1.h = 56;
@@ -70,6 +70,11 @@ bool init(void)
 
   running = true;
   return success;
+}
+
+void reset_ball() {
+  ball.x = (screen_width / 2) - half_ball_size;
+  ball.y = (screen_height / 2) - half_ball_size;
 }
 
 int main()
@@ -104,8 +109,16 @@ void loop()
   ball.y += ball_speed * ball_y_direction;
 
   if (ball.x <= 0) {
-    ball_x_direction = 1;
+    reset_ball();
   } else if (ball.x + ball_size >= screen_width) {
+    reset_ball();
+  }
+
+  if ((ball.x < paddle_1.x + paddle_1.w) && (ball.y - ball.h >= paddle_1.y) && (ball.y <= paddle_1.y + paddle_1.h)) {
+    ball_x_direction = 1;
+  }
+
+  if ((ball.x + ball.w >= paddle_2.x) && (ball.y - ball.h >= paddle_2.y) && (ball.y <= paddle_2.y + paddle_2.h)) {
     ball_x_direction = -1;
   }
 
